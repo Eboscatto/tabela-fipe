@@ -96,7 +96,7 @@ public class Principal {
             // Ordenar a lista por código e imprimir
             System.out.println("\nModelos dessa marca:");
             modeloLista.modelos().stream()
-                    .sorted(Comparator.comparing(Dados::nome))
+                    .sorted(Comparator.comparing(Dados::codigo))
                     .forEach(System.out::println);
         }
 
