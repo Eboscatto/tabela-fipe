@@ -2,11 +2,15 @@ package br.com.alura.tabelaFIPE.principal;
 
 import br.com.alura.tabelaFIPE.model.Dados;
 import br.com.alura.tabelaFIPE.model.Modelos;
+import br.com.alura.tabelaFIPE.model.Veiculo;
 import br.com.alura.tabelaFIPE.service.ConsumoApi;
 import br.com.alura.tabelaFIPE.service.ConverteDados;
 
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class Principal {
     private Scanner leitura = new Scanner(System.in);
@@ -56,15 +60,15 @@ public class Principal {
             switch (opcao) {
                 case 1:
                     endereco = URL_BASE + "carros/marcas";
-                    System.out.println("Exbindo a consulta das marcas de carros:");
+                    System.out.println("\nExbindo a consulta das marcas de carros:");
                     break;
                 case 2:
                     endereco = URL_BASE + "motos/marcas";
-                    System.out.println("Exibindo a consulta das marcas de motos:");
+                    System.out.println("\nExibindo a consulta das marcas de motos:");
                     break;
                 case 3:
                     endereco = URL_BASE + "caminhoes/marcas";
-                    System.out.println("Exibindo a consulta das marcas de caminhões:");
+                    System.out.println("\nExibindo a consulta das marcas de caminhões:");
                     break;
                 default:
                     continue;
@@ -73,7 +77,7 @@ public class Principal {
             var json = consumo.obterDados(endereco);
             System.out.println(json);
 
-            // Obter lista de marcas
+            // Obter lista das marcas dos veículos
             var marcas = conversor.obterLista(json, Dados.class);
             marcas.stream()
                     // Ordenar por ordem de código
@@ -81,10 +85,10 @@ public class Principal {
                     .forEach(System.out::println);
 
             // Fazer a escolha da marca
-            System.out.println("Informe o código da marca para consulta:");
+            System.out.println("\nInforme o código da marca para consulta:");
             var codigoMarca = leitura.nextLine().toLowerCase();
 
-            // Alterar o enderço de busca para buscar pela marca e modelo
+            // Buscar pela marca e modelo
             endereco = endereco + "/" + codigoMarca + "/modelos";
 
             // Armazenar no json os dados recebidos
@@ -98,26 +102,43 @@ public class Principal {
             modeloLista.modelos().stream()
                     .sorted(Comparator.comparing(Dados::codigo))
                     .forEach(System.out::println);
+
+            // Informar o modelo do veículo para busca
+            System.out.println("\nDigite o nome do veículo para busca:");
+            var nomeVeiulo = leitura.nextLine();
+
+            // Armazenar os dados do veículo na lista
+            List<Dados> modelosFiltrados = modeloLista.modelos().stream()
+                    // Filtrar o nome do veículo
+                    .filter(m -> m.nome().toLowerCase().contains(nomeVeiulo.toLowerCase()))
+                    .collect(Collectors.toList());
+            System.out.println("\nModelos filtrados:");
+            modelosFiltrados.forEach(System.out::println);
+
+            // Buscar veículo pelo código do modelo
+            System.out.println("\nDigite o código do modelo para buscar os valores de avaliação:");
+            var codigoModelo = leitura.nextLine();
+            endereco = endereco + "/" + codigoModelo + "/anos";
+            json = consumo.obterDados(endereco);
+            List<Dados> anos = conversor.obterLista(json, Dados.class);
+
+            // Criar lista de veículos
+            List<Veiculo> veiculos = new ArrayList<>();
+
+            // Percorrer lista de veículos
+            for (int i = 0; i < anos.size(); i++) {
+                var enderecoAnos = endereco + "/" + anos.get(i).codigo();
+                // Salvar Json
+                json = consumo.obterDados(enderecoAnos);
+                // Converter Json em classe
+                Veiculo veiculo = conversor.obterDados(json, Veiculo.class);
+                // Adicionar veículo na lista
+                veiculos.add(veiculo);
+            }
+            // Exibir veículos
+            System.out.println("\nTodos os veículos do modelo informado filtrados por ano: ");
+            veiculos.forEach(System.out::println);
         }
-
-        // Segunda opção é utilizar o if()
-
-        /*
-         String endereco;
-
-        if (opcao.toLowerCase().contains("car")){
-            endereco = URL_BASE + "carros/marcas";
-        } else if (opcao.toLowerCase().contains("mot")) {
-            endereco = URL_BASE + "motos/marcas";
-        } else {
-            endereco = URL_BASE + "caminhoes/marcas";
-        }
-
-        // Armazenar dados no formato json
-        var json = consumo.obterDados(endereco);
-
-        */
-
     }
 }
 

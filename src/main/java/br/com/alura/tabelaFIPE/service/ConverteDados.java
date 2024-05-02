@@ -13,15 +13,14 @@ public class ConverteDados implements IConverteDados {
     @Override
     public <T> T obterDados(String json, Class<T> classe) {
         try {
-            return mapper.readValue(json, classe); // Retornar a conversão do Json para a classe que for determinada
+            return mapper.readValue(json, classe); // Retornar a conversão do Json para a classe determinada
 
         } catch(JsonProcessingException e) {
             throw new RuntimeException();
         }
     }
 
-    // Obter uma lista genérica de dados usando o genericType,
-    // seja veiculos, motos ou caminhão.
+    // Obter uma lista genérica de dados usando o generic Type,
     @Override
     public <T> List<T> obterLista(String json, Class<T> classe) {
         CollectionType lista = mapper.getTypeFactory()

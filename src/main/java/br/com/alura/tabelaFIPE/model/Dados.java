@@ -1,7 +1,6 @@
 package br.com.alura.tabelaFIPE.model;
 
 
-// Armazenar os dados genéricos seja da marca ou modelo dos veiculos, motos ou caminhão, os dois
-// usar a mesma estrutura e tipo de dados: código e nome.
+// Armazenar os dados genéricos do veículo como: marca e modelo, ambos possuem os mesmos campos.
 public record Dados(String codigo, String nome) {
 }

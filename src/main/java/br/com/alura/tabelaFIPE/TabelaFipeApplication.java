@@ -13,7 +13,6 @@ public class TabelaFipeApplication implements CommandLineRunner {
 
 		SpringApplication.run(TabelaFipeApplication.class, args);
 	}
-
 	@Override
 	public void run(String... args) throws Exception {
 		Principal principal = new Principal();
